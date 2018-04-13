@@ -22,3 +22,7 @@ Route::get('/customers', 'CustomersController@index');
 Route::get('/customer/{id}', 'CustomersController@show');
 
 Route::post('/customer/add', 'CustomersController@store');
+
+Route::post('/customer/update/{id}', 'CustomersController@update');
+
+Route::delete('/customer/delete/{id}', 'CustomersController@destroy');
