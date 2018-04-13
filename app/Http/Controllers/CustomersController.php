@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use Validator;
 use Illuminate\Http\Request;
 
 class CustomersController extends Controller
@@ -20,7 +21,7 @@ class CustomersController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [ 
             'first_name' =>'required',
             'last_name' => 'required',
             'phone' => 'required',
@@ -28,6 +29,10 @@ class CustomersController extends Controller
             'city' => 'required',
             'state' => 'required'
         ]);
+        if ($validator->fails()) {
+            $response = array('response' => $validator->messages(), 'success' => false);
+            return $response;
+        }
         $customer = Customer::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -37,11 +42,26 @@ class CustomersController extends Controller
             'state' => $request->state
         ]);
 
-        return response("Success: Customer Added", 200);
+        // return response("Success: Customer Added", 200);
+        return response()->json($customer);
     }
 
     public function update(Request $request, $id)
     {
+        $validator = Validator::make($request->all(), [ 
+            'first_name' =>'required',
+            'last_name' => 'required',
+            'phone' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $response = [ 'response' => $validator->messages(), 'success' => false ];
+            return $response;
+        }
+
         $customer = Customer::findOrFail($id);
 
         $customer->first_name = $request->first_name;
@@ -52,13 +72,15 @@ class CustomersController extends Controller
         $customer->state = $request->state;
         $customer->save();
     
-        return response("Success: Customer Updated", 200);
-
+        // return response("Success: Customer Updated", 200);
+        return response()->json($customer);
     }
 
     public function destroy($id) 
     {
         Customer::destroy($id);
-        return response("Success: Customer Deleted", 200);
+        // return response("Success: Customer Deleted", 200);
+        $response = [ 'response' => 'Customer deleted', 'success' => true ];
+        return $response;
     }
 }
